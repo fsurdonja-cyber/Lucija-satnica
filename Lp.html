@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidencija Plaća</title>
+    <style>
+        :root {
+            --color-bg-base: #0f172a;
+            --color-bg-elevated: #020617;
+            --color-bg-surface: #1e293b;
+            --color-bg-muted: #334155;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-text-muted: #94a3b8;
+            --color-text-accent: #38bdf8;
+            --color-primary: #38bdf8;
+            --color-primary-hover: #0ea5e9;
+            --color-primary-active: #0284c7;
+            --color-secondary: rgba(119, 124, 124, 0.15);
+            --color-secondary-hover: rgba(119, 124, 124, 0.25);
+            --color-border: rgba(119, 124, 124, 0.3);
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --color-bg-base: #ffffff;
+                --color-bg-elevated: #f8fafc;
+                --color-bg-surface: #f1f5f9;
+                --color-bg-muted: #e2e8f0;
+                --color-text-primary: #0f172a;
+                --color-text-secondary: #475569;
+                --color-text-muted: #64748b;
+                --color-text-accent: #0284c7;
+                --color-primary: #0284c7;
+                --color-primary-hover: #0369a1;
+                --color-primary-active: #075985;
+                --color-secondary: rgba(94, 82, 64, 0.12);
+                --color-secondary-hover: rgba(94, 82, 64, 0.2);
+                --color-border: rgba(94, 82, 64, 0.2);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-bg-base);
+            color: var(--color-text-primary);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-text-accent);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            color: var(--color-text-accent);
+        }
+
+        .card {
+            background: var(--color-bg-surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--color-border);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-bg-base);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-bg-base);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: var(--color-text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: var(--color-bg-muted);
+            font-weight: 600;
+            color: var(--color-text-accent);
+        }
+
+        tr:hover {
+            background: var(--color-bg-muted);
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            background: var(--color-bg-elevated);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-text-accent);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .badge-day {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-success);
+        }
+
+        .badge-night {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .input-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .input-table th,
+        .input-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--color-border);
+        }
+
+        .input-table th {
+            background: var(--color-bg-muted);
+            font-weight: 600;
+            color: var(--color-text-accent);
+        }
+
+        .input-table input[type="date"],
+        .input-table input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            background: var(--color-bg-base);
+            color: var(--color-text-primary);
+        }
+
+        .input-table input[type="number"] {
+            text-align: center;
+        }
+
+        .shift-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--color-border);
+            border-radius: 6px;
+            background: var(--color-bg-base);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .shift-btn:hover {
+            border-color: var(--color-primary);
+        }
+
+        .shift-btn.active-day {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-success);
+            border-color: var(--color-success);
+        }
+
+        .shift-btn.active-night {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-color: #60a5fa;
+        }
+
+        .day-name {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.875rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Evidencija Radnih Sati i Plaća</h1>
+
+        <div class="card">
+            <h2>Unos Radnih Sati</h2>
+            <div class="form-group" style="max-width: 300px;">
+                <label for="monthInput">Odaberi Mjesec</label>
+                <input type="month" id="monthInput" onchange="generateMonthTable()">
+            </div>
+            <table class="input-table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Dan</th>
+                        <th>Dnevno</th>
+                        <th>Noćno</th>
+                    </tr>
+                </thead>
+                <tbody id="inputTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Pregled</h2>
+            <div class="summary">
+                <div class="summary-item">
+                    <div class="summary-label">Ukupno Sati</div>
+                    <div class="summary-value" id="totalHours">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Redovni Sati</div>
+                    <div class="summary-value" id="regularHours">176</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Prekovremeni Sati</div>
+                    <div class="summary-value" id="overtimeHours">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Jutarnja Smjena</div>
+                    <div class="summary-value" id="dayShiftHours">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Noćna Smjena</div>
+                    <div class="summary-value" id="nightShiftHours">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Izračunata Plaća</div>
+                    <div class="summary-value" id="monthlyRate">0.00 €</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Raspored po Danima</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dan</th>
+                        <th>Jutarnja Smjena</th>
+                        <th>Noćna Smjena</th>
+                        <th>Ukupno</th>
+                    </tr>
+                </thead>
+                <tbody id="weekdayBreakdown">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--color-text-muted);">Nema podataka</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        let entries = [];
+        let monthData = {};
+
+        const entriesBody = document.getElementById('entriesBody');
+        const inputTableBody = document.getElementById('inputTableBody');
+        const monthInput = document.getElementById('monthInput');
+
+        const today = new Date();
+        monthInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+        function generateMonthTable() {
+            const [year, month] = monthInput.value.split('-').map(Number);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const dayNames = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
+
+            inputTableBody.innerHTML = '';
+            
+            filterEntriesByMonth();
+            calculateSummary();
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const date = new Date(year, month - 1, day);
+                const dayName = dayNames[date.getDay()];
+
+                const existingDay = monthData[dateStr] || {};
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.${year}</td>
+                    <td><span class="day-name">${dayName}</span></td>
+                    <td>
+                        <button class="shift-btn ${existingDay.type === 'day' ? 'active-day' : ''}" 
+                                data-date="${dateStr}"
+                                data-type="day"
+                                onclick="toggleShift(this)">D</button>
+                    </td>
+                    <td>
+                        <button class="shift-btn ${existingDay.type === 'night' ? 'active-night' : ''}" 
+                                data-date="${dateStr}"
+                                data-type="night"
+                                onclick="toggleShift(this)">N</button>
+                    </td>
+                `;
+                inputTableBody.appendChild(row);
+            }
+        }
+
+        function toggleShift(button) {
+            const dateStr = button.dataset.date;
+            const type = button.dataset.type;
+            const [year, month, day] = dateStr.split('-').map(Number);
+
+            if (type === 'day') {
+                if (monthData[dateStr] && monthData[dateStr].type === 'day') {
+                    delete monthData[dateStr];
+                    button.classList.remove('active-day');
+                } else {
+                    monthData[dateStr] = { type: 'day' };
+                    button.classList.add('active-day');
+                    
+                    const otherBtn = button.parentElement.nextElementSibling?.querySelector('.shift-btn') || 
+                                    button.parentElement.previousElementSibling?.querySelector('.shift-btn');
+                    if (otherBtn) {
+                        otherBtn.classList.remove('active-night');
+                    }
+                }
+            } else {
+                if (monthData[dateStr] && monthData[dateStr].type === 'night') {
+                    delete monthData[dateStr];
+                    button.classList.remove('active-night');
+                    
+                    const nextDate = new Date(year, month - 1, day + 1);
+                    const nextDateStr = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+                    if (monthData[nextDateStr] && monthData[nextDateStr].nightCarryover) {
+                        delete monthData[nextDateStr].nightCarryover;
+                    }
+                } else {
+                    monthData[dateStr] = { type: 'night' };
+                    button.classList.add('active-night');
+                    
+                    const otherBtn = button.parentElement.previousElementSibling?.querySelector('.shift-btn') || 
+                                    button.parentElement.nextElementSibling?.querySelector('.shift-btn');
+                    if (otherBtn) {
+                        otherBtn.classList.remove('active-day');
+                    }
+                    
+                    const nextDate = new Date(year, month - 1, day + 1);
+                    const nextDateStr = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+                    if (!monthData[nextDateStr]) {
+                        monthData[nextDateStr] = {};
+                    }
+                    monthData[nextDateStr].nightCarryover = true;
+                }
+            }
+
+            rebuildEntries();
+        }
+
+        function rebuildEntries() {
+            entries = [];
+            
+            for (const [dateStr, data] of Object.entries(monthData)) {
+                if (data.type === 'day') {
+                    entries.push({
+                        id: `${dateStr}-day`,
+                        date: dateStr,
+                        shift: 'day',
+                        hours: 12.5
+                    });
+                } else if (data.type === 'night') {
+                    entries.push({
+                        id: `${dateStr}-day-night`,
+                        date: dateStr,
+                        shift: 'day',
+                        hours: 3
+                    });
+                    entries.push({
+                        id: `${dateStr}-night`,
+                        date: dateStr,
+                        shift: 'night',
+                        hours: 2
+                    });
+                    
+                    const [year, month, day] = dateStr.split('-').map(Number);
+                    const nextDate = new Date(year, month - 1, day + 1);
+                    const nextDateStr = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+                    
+                    entries.push({
+                        id: `${nextDateStr}-night-carryover`,
+                        date: nextDateStr,
+                        shift: 'night',
+                        hours: 6
+                    });
+                    entries.push({
+                        id: `${nextDateStr}-day-carryover`,
+                        date: nextDateStr,
+                        shift: 'day',
+                        hours: 1.5
+                    });
+                }
+            }
+
+            entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+            filterEntriesByMonth();
+            calculateSummary();
+        }
+
+        function deleteEntry(id) {
+            const entry = entries.find(e => e.id === id);
+            if (entry) {
+                const dateStr = entry.date;
+                
+                if (monthData[dateStr] && monthData[dateStr].type) {
+                    delete monthData[dateStr];
+                }
+                
+                generateMonthTable();
+            }
+        }
+
+        function filterEntriesByMonth() {
+            const [year, month] = monthInput.value.split('-').map(Number);
+            const monthStr = `${year}-${String(month).padStart(2, '0')}`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function getHolidays(year) {
+            return [
+                `${year}-01-01`, // Nova godina
+                `${year}-01-06`, // Bogojavljenje
+                `${year}-05-01`, // Praznik rada
+                `${year}-05-30`, // Dan državnosti
+                `${year}-06-22`, // Dan antifašističke borbe
+                `${year}-06-25`, // Dan državnosti
+                `${year}-08-05`, // Dan pobjede
+                `${year}-08-15`, // Velika Gospa
+                `${year}-10-08`, // Dan neovisnosti
+                `${year}-11-01`, // Svi sveti
+                `${year}-11-18`, // Dan sjećanja na žrtve Domovinskog rata
+                `${year}-12-25`, // Božić
+                `${year}-12-26`  // Sveti Stjepan
+            ];
+        }
+
+        function calculateSummary() {
+            const grossSalary = 1004.87;
+            
+            const [year, month] = monthInput.value.split('-').map(Number);
+            const monthStr = `${year}-${String(month).padStart(2, '0')}`;
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const holidays = getHolidays(year);
+            
+            let workDays = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const date = new Date(year, month - 1, day);
+                const dayOfWeek = date.getDay();
+                
+                if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays.includes(dateStr)) {
+                    workDays++;
+                }
+            }
+            
+            const hoursPerDay = 8;
+            const regularHours = workDays * hoursPerDay;
+
+            const hourlyRate = regularHours > 0 ? grossSalary / regularHours : 0;
+
+            const monthEntries = entries.filter(e => e.date.startsWith(monthStr));
+            const totalHours = monthEntries.reduce((sum, entry) => sum + entry.hours, 0);
+            const dayShiftHours = monthEntries.filter(e => e.shift === 'day').reduce((sum, entry) => sum + entry.hours, 0);
+            const nightShiftHours = monthEntries.filter(e => e.shift === 'night').reduce((sum, entry) => sum + entry.hours, 0);
+            const overtimeHours = Math.max(0, totalHours - regularHours);
+
+            // Izračun plaće: sati * satnica * 1.95 * koeficijent po danu (bez zaokruživanja)
+            let calculatedSalary = 0;
+            const baseCoefficient = 1.95;
+            let accumulatedHours = 0; // Praćenje ukupnih sati za prekovremene
+
+            // Izračun za svaki sat sa odgovarajućim koeficijentima
+            monthEntries.forEach(entry => {
+                const date = new Date(entry.date + 'T00:00:00');
+                const dayOfWeek = date.getDay(); // 0 = nedjelja, 1 = pon, ..., 6 = subota
+                let dayCoefficient = 1; // Dodatni koeficijent po danu
+
+                if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                    // Ponedjeljak do Petak
+                    if (entry.shift === 'day') {
+                        dayCoefficient = 1.05;
+                    } else {
+                        dayCoefficient = 1.55;
+                    }
+                } else if (dayOfWeek === 6) {
+                    // Subota
+                    if (entry.shift === 'day') {
+                        dayCoefficient = 1.3;
+                    } else {
+                        dayCoefficient = 1.8;
+                    }
+                } else if (dayOfWeek === 0) {
+                    // Nedjelja
+                    if (entry.shift === 'day') {
+                        dayCoefficient = 1.55;
+                    } else {
+                        dayCoefficient = 2.05;
+                    }
+                }
+
+                // Provjera prekovremenih sati
+                let hoursToCalculate = entry.hours;
+                let overtimeHoursInEntry = 0;
+                
+                if (accumulatedHours + entry.hours > regularHours) {
+                    // Sati prelaze redovne - dio je prekovremen
+                    if (accumulatedHours < regularHours) {
+                        // Dio sati je redovan, dio prekovremen
+                        let regularHoursInEntry = regularHours - accumulatedHours;
+                        overtimeHoursInEntry = entry.hours - regularHoursInEntry;
+                        
+                        // Redovni sati
+                        calculatedSalary += regularHoursInEntry * hourlyRate * baseCoefficient * dayCoefficient;
+                        
+                        // Prekovremeni sati (+ 0.5 na koeficijent)
+                        calculatedSalary += overtimeHoursInEntry * hourlyRate * baseCoefficient * (dayCoefficient + 0.5);
+                    } else {
+                        // Svi sati su prekovremeni
+                        calculatedSalary += entry.hours * hourlyRate * baseCoefficient * (dayCoefficient + 0.5);
+                    }
+                } else {
+                    // Svi sati su redovni
+                    calculatedSalary += entry.hours * hourlyRate * baseCoefficient * dayCoefficient;
+                }
+                
+                accumulatedHours += entry.hours;
+            });
+
+            document.getElementById('totalHours').textContent = totalHours;
+            document.getElementById('regularHours').textContent = regularHours;
+            document.getElementById('overtimeHours').textContent = overtimeHours;
+            document.getElementById('dayShiftHours').textContent = dayShiftHours;
+            document.getElementById('nightShiftHours').textContent = nightShiftHours;
+            document.getElementById('monthlyRate').textContent = calculatedSalary.toFixed(2) + ' €';
+            
+            calculateWeekdayBreakdown();
+        }
+
+        function calculateWeekdayBreakdown() {
+            const [year, month] = monthInput.value.split('-').map(Number);
+            const monthStr = `${year}-${String(month).padStart(2, '0')}`;
+            const monthEntries = entries.filter(e => e.date.startsWith(monthStr));
+            
+            const dayNames = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
+            const weekdayStats = {};
+            
+            for (let i = 0; i < 7; i++) {
+                weekdayStats[i] = { day: 0, night: 0 };
+            }
+            
+            monthEntries.forEach(entry => {
+                const date = new Date(entry.date + 'T00:00:00');
+                const dayOfWeek = date.getDay();
+                
+                if (entry.shift === 'day') {
+                    weekdayStats[dayOfWeek].day += entry.hours;
+                } else {
+                    weekdayStats[dayOfWeek].night += entry.hours;
+                }
+            });
+            
+            const tbody = document.getElementById('weekdayBreakdown');
+            let hasData = false;
+            
+            let html = '';
+            for (let i = 0; i < 7; i++) {
+                const stats = weekdayStats[i];
+                const total = stats.day + stats.night;
+                
+                if (total > 0) {
+                    hasData = true;
+                    html += `
+                        <tr>
+                            <td>${dayNames[i]}</td>
+                            <td>${stats.day}h</td>
+                            <td>${stats.night}h</td>
+                            <td><strong>${total}h</strong></td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            if (hasData) {
+                tbody.innerHTML = html;
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--color-text-muted);">Nema podataka</td></tr>';
+            }
+        }
+
+        generateMonthTable();
+        calculateSummary();
+    </script>
+</body>
+</html>
